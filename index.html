@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Carta</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    height: 100vh;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background-color: #fff0f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-container {
+    position: relative;
+    width: 300px;
+    height: 180px;
+    cursor: pointer;
+  }
+
+  .envelope-base {
+    width: 100%;
+    height: 100%;
+    background-color: #ffb6c1;
+    border-radius: 0 0 5px 5px;
+    position: absolute;
+    bottom: 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 2;
+  }
+
+  .envelope-pattern {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(#ff8fab 10%, transparent 10%);
+    background-size: 10px 10px;
+    opacity: 0.2;
+    border-radius: 0 0 5px 5px;
+  }
+
+  .envelope-flap {
+    width: 300px;
+    height: 150px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: top center;
+    transition: transform 0.6s ease;
+    z-index: 3;
+    background: none;
+  }
+
+  .envelope-flap::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    border-top: 120px solid #ff8fab;
+  }
+
+  .heart {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background-color: #ff6b8b;
+    transform: rotate(45deg);
+    z-index: 4;
+  }
+
+  .heart:before, .heart:after {
+    content: '';
+    width: 30px;
+    height: 30px;
+    background-color: #ff6b8b;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  .heart:before {
+    top: -15px;
+    left: 0;
+  }
+
+  .heart:after {
+    top: 0;
+    left: -15px;
+  }
+
+  .stamp {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #ff8fab;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    transform: rotate(-15deg);
+    z-index: 9;
+  }
+
+  .letter {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 320px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    box-sizing: border-box;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transform: translate(-50%, 100%);
+transition: transform 0.6s ease, opacity 0.4s ease 0.3s;
+
+    overflow-y: auto;
+    z-index: 20;
+    pointer-events: none; 
+  }
+
+  .letter.visible {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+  }
+
+  .letter-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+  }
+
+  .letter h2 {
+    color: #ff6b8b;
+    margin: 0 0 15px;
+    text-align: center;
+    font-size: 24px;
+  }
+
+  .letter p {
+    color: #555;
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: center;
+    margin: 0 0 15px;
+    width: 100%;
+  }
+
+  .letter img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #ffb6c1;
+    margin: 0 0 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .letter-border {
+    position: absolute;
+    width: calc(100% - 50px);
+    height: calc(100% - 50px);
+    border: 1px dashed #ffb6c1;
+    border-radius: 5px;
+    top: 25px;
+    left: 25px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card-container" id="card-container">
+    <div class="envelope-base">
+      <div class="envelope-pattern"></div>
+    </div>
+    <div class="envelope-flap"></div>
+    <div class="heart"></div>
+    <div class="stamp">♥</div>
+  </div>
+
+  <div class="letter" id="letter">
+    <div class="letter-border"></div>
+    <div class="letter-content">
+      <img src="5.jpg" alt="Corazones" />
+      <h2>Para eli</h2>
+      <p>
+        Mi persona favorita:<br /><br />
+        estaba aburrido y solo queria mostrarte mi amor de una forma creativa.
+      </p>
+      <p>
+        Con todo mi amor,<br />
+        <span style="color: #ff6b8b;">un brother enamorado</span>
+      </p>
+    </div>
+  </div>
+
+<script>
+const container = document.getElementById('card-container');
+const letter = document.getElementById('letter');
+
+function showLetter() {
+  letter.style.transition = 'transform 0.6s ease, opacity 0.4s ease 0.3s';
+  letter.classList.add('visible');
+  letter.style.transform = 'translate(-50%, -50%)'; 
+  letter.style.opacity = '1';
+
+  container.querySelector('.envelope-flap').style.transform = 'rotateX(180deg)';
+}
+
+function hideLetter() {
+  letter.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
+  letter.style.transform = 'translate(-50%, -60%)'; 
+  letter.style.opacity = '0';
+
+  setTimeout(() => {
+    letter.classList.remove('visible');
+    letter.style.transition = '';
+    letter.style.transform = '';
+    letter.style.opacity = '';
+    container.querySelector('.envelope-flap').style.transform = '';
+  }, 200);
+}
+
+container.addEventListener('mouseenter', showLetter);
+container.addEventListener('mouseleave', () => {
+  setTimeout(() => {
+    if (!letter.matches(':hover') && !container.matches(':hover')) {
+      hideLetter();
+    }
+  }, 10);
+});
+
+letter.addEventListener('mouseenter', showLetter);
+letter.addEventListener('mouseleave', () => {
+  setTimeout(() => {
+    if (!letter.matches(':hover') && !container.matches(':hover')) {
+      hideLetter();
+    }
+  }, 10);
+});
+
+
+</script>
+
+
+</body>
+</html>
